@@ -4,7 +4,7 @@ import type React from "react"
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, Bell, CircleUserRound, ChevronRight, Search, X, Home, BarChart3, Brain, Settings } from "lucide-react"
+import { Menu, Bell, CircleUserRound, ChevronRight, Search, X, Home, BarChart3, Brain, Settings, LogOut } from "lucide-react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -28,13 +28,13 @@ export function AppShell({ title, children, breadcrumb }: AppShellProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <div className="min-h-dvh bg-background text-foreground">
+    <div className="min-h-dvh bg-gradient-primary text-foreground">
       {/* Fixed Sidebar - Desktop */}
-      <aside className="fixed left-0 top-0 z-40 hidden h-full w-60 border-r bg-muted/40 md:block">
+      <aside className="fixed left-0 top-0 z-40 hidden h-full w-60 border-r border-gray-200/30 bg-gradient-card backdrop-blur-md md:block">
         <div className="flex h-full flex-col">
           {/* Sidebar Header */}
-          <div className="border-b p-4">
-            <Link href="/" className="font-semibold tracking-tight">
+          <div className="border-b border-gray-200/30 p-4 bg-gradient-to-r from-gray-50/50 to-gray-100/30">
+            <Link href="/" className="font-bold tracking-tight text-gradient text-lg">
               AI Sales Agent
             </Link>
           </div>
@@ -50,21 +50,21 @@ export function AppShell({ title, children, breadcrumb }: AppShellProps) {
                     key={n.href}
                     href={n.href}
                     className={cn(
-                      "group relative flex items-center gap-2 rounded-md px-3 py-2 text-sm",
+                      "group relative flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-all duration-200",
                       active
-                        ? "bg-background text-foreground shadow-sm before:absolute before:left-0 before:top-1 before:h-6 before:w-0.5 before:rounded-full before:bg-primary"
-                        : "text-muted-foreground hover:bg-background/60",
+                        ? "btn-professional text-white shadow-professional before:absolute before:left-0 before:top-2 before:h-8 before:w-1 before:rounded-full before:bg-white"
+                        : "text-gray-600 hover:bg-gray-50/50 hover:text-gray-700 hover-lift",
                     )}
                     aria-current={active ? "page" : undefined}
                   >
-                    <Icon className="h-4 w-4" aria-hidden="true" />
+                    <Icon className="h-5 w-5" aria-hidden="true" />
                     {n.label}
                   </Link>
                 )
               })}
-              <div className="mt-3 border-t pt-3">
-                <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">
-                  Logout
+              <div className="mt-6 border-t border-gray-200/30 pt-4">
+                <Link href="/" className="text-sm text-gray-500 hover:text-gray-700 transition-colors flex items-center gap-2">
+                  <LogOut className="w-4 h-4" /> Logout
                 </Link>
               </div>
             </div>
@@ -77,16 +77,16 @@ export function AppShell({ title, children, breadcrumb }: AppShellProps) {
         <div className="fixed inset-0 z-50 md:hidden">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/50"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setMobileMenuOpen(false)}
           />
           
           {/* Mobile Sidebar */}
-          <aside className="fixed left-0 top-0 h-full w-60 border-r bg-muted/40">
+          <aside className="fixed left-0 top-0 h-full w-60 border-r border-gray-200/30 bg-gradient-card backdrop-blur-md">
             <div className="flex h-full flex-col">
               {/* Mobile Sidebar Header */}
-              <div className="flex items-center justify-between border-b p-4">
-                <Link href="/" className="font-semibold">
+              <div className="flex items-center justify-between border-b border-gray-200/30 p-4 bg-gradient-to-r from-gray-50/50 to-gray-100/30">
+                <Link href="/" className="font-bold text-gradient">
                   AI Sales Agent
                 </Link>
                 <Button
@@ -94,6 +94,7 @@ export function AppShell({ title, children, breadcrumb }: AppShellProps) {
                   size="icon"
                   onClick={() => setMobileMenuOpen(false)}
                   aria-label="Close navigation"
+                  className="hover:bg-gray-100"
                 >
                   <X className="h-5 w-5" />
                 </Button>
@@ -110,20 +111,20 @@ export function AppShell({ title, children, breadcrumb }: AppShellProps) {
                         key={n.href}
                         href={n.href}
                         className={cn(
-                          "flex items-center gap-2 rounded-md px-3 py-2 text-sm",
-                          active ? "bg-background text-foreground" : "text-muted-foreground hover:bg-background/60",
+                          "flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-all duration-200",
+                          active ? "btn-professional text-white" : "text-gray-600 hover:bg-gray-50/50 hover:text-gray-700",
                         )}
                         aria-current={active ? "page" : undefined}
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        <Icon className="h-4 w-4" aria-hidden="true" />
+                        <Icon className="h-5 w-5" aria-hidden="true" />
                         {n.label}
                       </Link>
                     )
                   })}
-                  <div className="mt-3 border-t pt-3">
-                    <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">
-                      Logout
+                  <div className="mt-6 border-t border-gray-200/30 pt-4">
+                    <Link href="/" className="text-sm text-gray-500 hover:text-gray-700 transition-colors flex items-center gap-2">
+                      <LogOut className="w-4 h-4" /> Logout
                     </Link>
                   </div>
                 </div>
@@ -136,12 +137,12 @@ export function AppShell({ title, children, breadcrumb }: AppShellProps) {
       {/* Main Content Area */}
       <div className="md:ml-60">
         {/* Top Header */}
-        <header className="sticky top-0 z-30 border-b bg-background">
+        <header className="sticky top-0 z-30 border-b border-gray-200/30 bg-white/80 backdrop-blur-md">
           <div className="flex items-center gap-3 px-4 py-3">
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
+              className="md:hidden hover:bg-gray-100"
               onClick={() => setMobileMenuOpen(true)}
               aria-label="Open navigation"
             >
@@ -149,39 +150,44 @@ export function AppShell({ title, children, breadcrumb }: AppShellProps) {
             </Button>
             
             {/* Mobile Logo */}
-            <Link href="/" className="font-semibold md:hidden">
+            <Link href="/" className="font-bold text-gradient md:hidden">
               AI Sales Agent
             </Link>
             
             {/* Search Bar */}
             <div className="relative ml-2 hidden flex-1 items-center md:flex">
-              <Search className="pointer-events-none absolute left-3 h-4 w-4 text-muted-foreground" />
-              <Input className="pl-9" placeholder="Search conversations, customers..." aria-label="Global search" />
+              <Search className="pointer-events-none absolute left-3 h-4 w-4 text-gray-400" />
+              <Input
+                className="pl-9 border-gray-200/50 focus:border-gray-400 focus:ring-gray-200 bg-white/50"
+                placeholder="Search conversations, customers..."
+                aria-label="Global search"
+              />
             </div>
             
             {/* Header Actions */}
             <div className="ml-auto flex items-center gap-2">
-              <Button variant="ghost" size="icon" aria-label="Notifications">
-                <Bell className="h-5 w-5" />
+              <Button variant="ghost" size="icon" aria-label="Notifications" className="hover:bg-gray-100 relative">
+                <Bell className="h-5 w-5 text-gray-600" />
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-dark-card rounded-full"></div>
               </Button>
-              <Button variant="ghost" size="icon" aria-label="Account">
-                <CircleUserRound className="h-6 w-6" />
+              <Button variant="ghost" size="icon" aria-label="Account" className="hover:bg-gray-100">
+                <CircleUserRound className="h-6 w-6 text-gray-600" />
               </Button>
             </div>
           </div>
         </header>
 
         {/* Main Content */}
-        <main className="px-4 py-6">
+        <main className="px-4 py-6 bg-gradient-to-br from-gray-50/30 to-gray-100/10 min-h-screen">
           {breadcrumb && breadcrumb.length > 0 && (
-            <nav aria-label="Breadcrumb" className="mb-3 text-sm text-muted-foreground">
+            <nav aria-label="Breadcrumb" className="mb-3 text-sm text-gray-600">
               <ol className="flex items-center gap-1">
                 {breadcrumb.map((b, i) => {
                   const last = i === breadcrumb.length - 1
                   return (
                     <li key={i} className="flex items-center gap-1">
                       {b.href ? (
-                        <Link href={b.href} className="hover:text-foreground">
+                        <Link href={b.href} className="hover:text-gray-700 transition-colors">
                           {b.label}
                         </Link>
                       ) : (
@@ -194,7 +200,7 @@ export function AppShell({ title, children, breadcrumb }: AppShellProps) {
               </ol>
             </nav>
           )}
-          {title && <h1 className="mb-4 text-2xl font-semibold tracking-tight text-[#1F1F1F]">{title}</h1>}
+          {title && <h1 className="mb-6 text-3xl font-bold tracking-tight text-gray-800">{title}</h1>}
           {children}
         </main>
       </div>

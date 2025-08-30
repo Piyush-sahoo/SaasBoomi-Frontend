@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react"
 import { KpiCard } from "@/components/kpi-card"
 import { rtdb } from "@/lib/firebase"
-import { get, ref } from "firebase/database"
+import { get, ref, type Database } from "firebase/database"
+import { TrendingUp, DollarSign, MessageCircle, Rocket } from "lucide-react"
 
 type KPIs = {
   conversionRate?: string
@@ -21,7 +22,7 @@ export function DynamicKpis() {
     async function run() {
       try {
         // First try to get enhanced KPI data
-        const enhancedKpisSnap = await get(ref(rtdb, "sites/default/dashboard/kpis"))
+        const enhancedKpisSnap = await get(ref(rtdb as unknown as Database, "sites/default/dashboard/kpis"))
         const enhancedKpis = enhancedKpisSnap.val()
         
         if (enhancedKpis) {
@@ -30,11 +31,11 @@ export function DynamicKpis() {
         }
 
         // Fallback to calculating from events (existing logic)
-        const snap = await get(ref(rtdb, "events"))
+        const snap = await get(ref(rtdb as unknown as Database, "events"))
         const events = snap.val() || {}
         
         // Also try voice-commerce-sessions for more accurate data
-        const sessionsSnap = await get(ref(rtdb, "voice-commerce-sessions"))
+        const sessionsSnap = await get(ref(rtdb as unknown as Database, "voice-commerce-sessions"))
         const sessions = sessionsSnap.val() || {}
         
         let totalConversations = 0
@@ -103,20 +104,20 @@ export function DynamicKpis() {
 
   if (!kpis) {
     return (
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-4">
         {[0,1,2,3].map((i) => (
-          <div key={i} className="h-28 animate-pulse rounded-md border bg-muted" />
+          <div key={i} className="h-32 animate-pulse rounded-xl bg-gradient-to-r from-gray-100 to-gray-200 border border-gray-200/30" />
         ))}
       </div>
     )
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-4">
-      <KpiCard title="Conversion Rate" value={kpis.conversionRate || "—"} trend={kpis.conversionTrend} />
-      <KpiCard title="Avg Order Value" value={kpis.avgOrderValue || "—"} trend={kpis.aovTrend} accent="green" />
-      <KpiCard title="Total Conversations" value={kpis.totalConversations || "—"} />
-      <KpiCard title="Revenue Generated" value={kpis.revenueGenerated || "—"} accent="amber" />
+    <div className="grid gap-6 md:grid-cols-4">
+      <KpiCard title="Conversion Rate" value={kpis.conversionRate || "—"} trend={kpis.conversionTrend} icon={TrendingUp} />
+      <KpiCard title="Avg Order Value" value={kpis.avgOrderValue || "—"} trend={kpis.aovTrend} accent="green" icon={DollarSign} />
+      <KpiCard title="Total Conversations" value={kpis.totalConversations || "—"} icon={MessageCircle} />
+      <KpiCard title="Revenue Generated" value={kpis.revenueGenerated || "—"} accent="amber" icon={Rocket} />
     </div>
   )
 }
