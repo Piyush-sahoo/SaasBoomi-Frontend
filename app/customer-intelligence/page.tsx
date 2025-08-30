@@ -1,43 +1,92 @@
+"use client"
+
 import { AppShell } from "@/components/app-shell"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { useEffect, useState } from "react"
+import { rtdb } from "@/lib/firebase"
+import { get, ref } from "firebase/database"
+
+type Summary = {
+  newInsights?: { value?: number | string; trend?: string }
+  trendingTopics?: { value?: number | string; trend?: string }
+  sentiment?: { value?: number | string; trend?: string }
+  actionItems?: { value?: number | string; trend?: string }
+}
+
+type Insight = { title?: string; quote?: string; color?: string; actions?: string[] }
+type Objection = { label?: string; percent?: number }
+type Interest = { label?: string; value?: number; color?: string }
 
 export default function CustomerIntelligencePage() {
+  const [summary, setSummary] = useState<Summary | null>(null)
+  const [insights, setInsights] = useState<Insight[]>([])
+  const [objections, setObjections] = useState<Objection[]>([])
+  const [interestMap, setInterestMap] = useState<Interest[]>([])
+  const [journey, setJourney] = useState<string[]>([])
+  const [footer, setFooter] = useState<{ updated?: string; accuracy?: string; pending?: string } | null>(null)
+
+  useEffect(() => {
+    async function run() {
+      try {
+        const s = await get(ref(rtdb, "sites/default/intelligence/summary"))
+        setSummary((s.val() || {}) as Summary)
+      } catch { setSummary({}) }
+      try {
+        const i = await get(ref(rtdb, "sites/default/intelligence/insights"))
+        const v = i.val() || []
+        const arr = Array.isArray(v) ? v.filter(Boolean) : Object.values(v)
+        setInsights(arr as Insight[])
+      } catch {}
+      try {
+        const o = await get(ref(rtdb, "sites/default/intelligence/objections"))
+        const v = o.val() || []
+        const arr = Array.isArray(v) ? v.filter(Boolean) : Object.values(v)
+        setObjections(arr as Objection[])
+      } catch {}
+      try {
+        const m = await get(ref(rtdb, "sites/default/intelligence/interestMap"))
+        const v = m.val() || []
+        const arr = Array.isArray(v) ? v.filter(Boolean) : Object.values(v)
+        setInterestMap(arr as Interest[])
+      } catch {}
+      try {
+        const j = await get(ref(rtdb, "sites/default/intelligence/journey"))
+        const v = j.val() || []
+        const arr = Array.isArray(v) ? v.filter(Boolean) : Object.values(v)
+        setJourney(arr as string[])
+      } catch {}
+      try {
+        const f = await get(ref(rtdb, "sites/default/intelligence/footer"))
+        setFooter((f.val() || {}) as any)
+      } catch {}
+    }
+    run()
+  }, [])
+
   return (
-    <AppShell
-      title="Customer Intelligence"
-    >
+    <AppShell title="Customer Intelligence">
       {/* Summary KPIs */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-sm text-[#616161]">New Insights This Week</div>
-            <div className="text-2xl font-semibold text-[#005BFF]">23</div>
-            <div className="text-xs text-[#10b981]">↑ 15% vs last week</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-sm text-[#616161]">Trending Topics</div>
-            <div className="text-2xl font-semibold text-[#005BFF]">8</div>
-            <div className="text-xs text-[#10b981]">+3 new topics</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-sm text-[#616161]">Customer Sentiment</div>
-            <div className="text-2xl font-semibold text-[#10b981]">92%</div>
-            <div className="text-xs text-[#10b981]">↑ 2% improvement</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-sm text-[#616161]">Action Items Generated</div>
-            <div className="text-2xl font-semibold text-[#005BFF]">12</div>
-            <div className="text-xs text-[#10b981]">+4 new items</div>
-          </CardContent>
-        </Card>
+        {(() => {
+          const s = summary || {}
+          const cards = [
+            { label: "New Insights This Week", v: s.newInsights },
+            { label: "Trending Topics", v: s.trendingTopics },
+            { label: "Customer Sentiment", v: s.sentiment },
+            { label: "Action Items Generated", v: s.actionItems },
+          ]
+          return cards.map((c) => (
+            <Card key={c.label}>
+              <CardContent className="p-4">
+                <div className="text-sm text-muted-foreground">{c.label}</div>
+                <div className="text-2xl font-semibold text-primary">{c.v?.value ?? "—"}</div>
+                <div className="text-xs text-emerald-500">{c.v?.trend ?? ""}</div>
+              </CardContent>
+            </Card>
+          ))
+        })()}
       </div>
 
       {/* Voice Insights + Objections */}
@@ -47,32 +96,23 @@ export default function CustomerIntelligencePage() {
             <CardTitle className="text-base">Customer Voice Insights - What They're Really Thinking</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {[
-              {
-                title: "Trending Now",
-                quote: "I wish I knew how long the battery actually lasts in real use",
-                color: "bg-[#FFF7D6] border-[#FDE68A]",
-              },
-              {
-                title: "Price Sensitivity",
-                quote: "This seems expensive, but I don't know what makes it worth it",
-                color: "bg-[#E6F6FF] border-[#BAE6FD]",
-              },
-              {
-                title: "Beginner Concerns",
-                quote: "I'm worried about breaking this if I'm a beginner",
-                color: "bg-[#FFECEF] border-[#FECDD3]",
-              },
-            ].map((i) => (
-              <div key={i.title} className={`rounded-md border p-3 ${i.color}`}>
-                <div className="text-sm font-medium">{i.title}</div>
-                <blockquote className="mt-1 text-sm text-[#616161]">"{i.quote}"</blockquote>
-                <ul className="mt-2 list-disc pl-5 text-xs text-[#616161]">
-                  <li>Insight: Add real-world usage details to product pages.</li>
-                  <li>Action: Update descriptions and comparison charts.</li>
-                </ul>
-              </div>
-            ))}
+            {insights.length === 0 ? (
+              <div className="text-sm text-muted-foreground">No insights</div>
+            ) : (
+              insights.map((i, idx) => (
+                <div key={(i.title || "insight") + idx} className={`rounded-md border p-3 ${i.color || "bg-muted"}`}>
+                  <div className="text-sm font-medium">{i.title}</div>
+                  {i.quote && <blockquote className="mt-1 text-sm text-muted-foreground">"{i.quote}"</blockquote>}
+                  {Array.isArray(i.actions) && i.actions.length > 0 && (
+                    <ul className="mt-2 list-disc pl-5 text-xs text-muted-foreground">
+                      {i.actions.map((a, k) => (
+                        <li key={k}>{a}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))
+            )}
           </CardContent>
         </Card>
 
@@ -81,10 +121,15 @@ export default function CustomerIntelligencePage() {
             <CardTitle className="text-base">Objection Patterns</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <div className="rounded-md border border-[#E5E7EB] p-2">Price Objections — 34%</div>
-            <div className="rounded-md border border-[#E5E7EB] p-2">Timing Objections — 28%</div>
-            <div className="rounded-md border border-[#E5E7EB] p-2">Technical Doubts — 23%</div>
-            <div className="rounded-md border border-[#E5E7EB] p-2">Shipping Concerns — 15%</div>
+            {objections.length === 0 ? (
+              <div className="text-sm text-muted-foreground">No data</div>
+            ) : (
+              objections.map((o, i) => (
+                <div key={(o.label || "obj") + i} className="rounded-md border p-2">
+                  {o.label} — {o.percent ?? "—"}%
+                </div>
+              ))
+            )}
           </CardContent>
           <CardFooter>
             <Button variant="outline" className="w-full bg-transparent">
@@ -101,23 +146,21 @@ export default function CustomerIntelligencePage() {
             <CardTitle className="text-base">Product Interest Map</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            {[
-              { label: "Drones & Accessories", value: 158, color: "bg-[#1D4ED8]" },
-              { label: "Camera Equipment", value: 124, color: "bg-[#059669]" },
-              { label: "Audio Systems", value: 89, color: "bg-[#7C3AED]" },
-              { label: "Smart Home", value: 67, color: "bg-[#F59E0B]" },
-              { label: "Other", value: 23, color: "bg-[#EF4444]" },
-            ].map((row) => (
-              <div key={row.label}>
-                <div className="mb-1 flex items-center justify-between">
-                  <span>{row.label}</span>
-                  <span className="text-[#616161]">{row.value}</span>
+            {interestMap.length === 0 ? (
+              <div className="text-sm text-muted-foreground">No data</div>
+            ) : (
+              interestMap.map((row, i) => (
+                <div key={(row.label || "item") + i}>
+                  <div className="mb-1 flex items-center justify-between">
+                    <span>{row.label}</span>
+                    <span className="text-muted-foreground">{row.value}</span>
+                  </div>
+                  <div className="h-2 w-full rounded bg-muted">
+                    <div className={`h-2 rounded ${row.color || "bg-primary"}`} style={{ width: `${Math.min(100, Number(row.value) || 0)}%` }} />
+                  </div>
                 </div>
-                <div className="h-2 w-full rounded bg-[#E5E7EB]">
-                  <div className={`h-2 rounded ${row.color}`} style={{ width: `${Math.min(100, row.value)}%` }} />
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -125,22 +168,28 @@ export default function CustomerIntelligencePage() {
             <CardTitle className="text-base">Customer Journey Insights</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <div className="rounded border border-[#BFDBFE] bg-[#EFF6FF] px-3 py-2 text-sm">Discovery Phase</div>
-            <div className="rounded border border-[#E9D5FF] bg-[#F5F3FF] px-3 py-2 text-sm">Evaluation Phase</div>
-            <div className="rounded border border-[#BBF7D0] bg-[#ECFDF5] px-3 py-2 text-sm">Decision Phase</div>
+            {journey.length === 0 ? (
+              <div className="text-sm text-muted-foreground">No data</div>
+            ) : (
+              journey.map((p, i) => (
+                <div key={i} className="rounded border px-3 py-2 text-sm">
+                  {p}
+                </div>
+              ))
+            )}
           </CardContent>
           <CardFooter>
-            <Button asChild className="w-full bg-[#005BFF] hover:bg-[#004AD8]">
+            <Button asChild className="w-full bg-primary text-primary-foreground hover:opacity-90">
               <Link href="/analytics">View Journey Details</Link>
             </Button>
           </CardFooter>
         </Card>
       </div>
 
-      <div className="mt-4 flex items-center justify-between rounded-md border border-[#E5E7EB] px-3 py-2 text-xs text-[#616161]">
-        <span>Insights updated: Real-time</span>
-        <span>Sentiment accuracy: 94%</span>
-        <span>Action items: 12 pending</span>
+      <div className="mt-4 flex items-center justify-between rounded-md border px-3 py-2 text-xs text-muted-foreground">
+        <span>Insights updated: {footer?.updated || "—"}</span>
+        <span>Sentiment accuracy: {footer?.accuracy || "—"}</span>
+        <span>Action items: {footer?.pending || "—"}</span>
       </div>
     </AppShell>
   )

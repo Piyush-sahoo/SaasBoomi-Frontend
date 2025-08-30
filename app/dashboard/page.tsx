@@ -1,26 +1,22 @@
 import { AppShell } from "@/components/app-shell"
-import { KpiCard } from "@/components/kpi-card"
+import { DynamicKpis } from "@/components/dynamic-kpis"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { PerformanceLine } from "@/components/charts/performance-line"
+import { LineChart, Rocket, Settings2 } from "lucide-react"
 
 export default function DashboardPage() {
   return (
     <AppShell title="Good morning! Here's your AI Sales Agent performance today">
       {/* KPIs */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <KpiCard title="Conversion Rate" value="12.5%" trend="↑ 2.1% vs last week" />
-        <KpiCard title="Avg Order Value" value="$156" trend="↑ $12 vs last week" accent="green" />
-        <KpiCard title="Conversations Today" value="47" />
-        <KpiCard title="Revenue Generated" value="$2,340" accent="amber" />
-      </div>
+      <DynamicKpis />
 
       {/* Charts and lists */}
       <div className="mt-4 grid gap-4 md:grid-cols-3">
         <Card className="md:col-span-2">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Performance Trends</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-base"><LineChart className="h-4 w-4" /> Performance Trends</CardTitle>
           </CardHeader>
           <CardContent>
             <PerformanceLine />
@@ -57,7 +53,7 @@ export default function DashboardPage() {
       <div className="mt-4 grid gap-4 md:grid-cols-3">
         <Card className="md:col-span-2">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">AI Insights</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-base"><Rocket className="h-4 w-4" /> AI Insights</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="rounded-md border border-[#BFDBFE] bg-[#EFF6FF] p-4 text-sm">
@@ -75,7 +71,7 @@ export default function DashboardPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Quick Actions</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-base"><Settings2 className="h-4 w-4" /> Quick Actions</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-2">
             <Button asChild className="bg-[#005BFF] hover:bg-[#004AD8]">

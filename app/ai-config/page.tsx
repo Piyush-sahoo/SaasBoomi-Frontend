@@ -5,22 +5,32 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Phone } from "lucide-react"
+import { rtdb } from "@/lib/firebase"
+import { get, ref, set } from "firebase/database"
 
 export default function AIConfigPage() {
   const [saving, setSaving] = useState(false)
-  const [script, setScript] = useState(`You are TechGuide Pro, a helpful AI sales assistant for ElectroWorld. Your role is to:
+  const [script, setScript] = useState("")
+  const [preview, setPreview] = useState<Array<{ role: "assistant" | "user"; text: string }>>([])
+  const [status, setStatus] = useState<string | null>(null)
 
-1. Greet customers warmly and ask how you can help them find the perfect tech solution
-2. Listen to their needs and ask clarifying questions about their requirements
-3. Recommend products that best match their needs and budget
-4. Provide detailed product information and specifications when asked
-5. Handle objections professionally and offer alternatives
-6. Guide customers through the purchase process
-7. Offer relevant accessories and extended warranties when appropriate
-
-Always be friendly, knowledgeable, and customer-focused. If you don't know something, be honest and offer to find the information for them.`)
+  useEffect(() => {
+    async function load() {
+      try {
+        const s = await get(ref(rtdb, "sites/default/agent/script"))
+        setScript(s.val() || "")
+      } catch { setScript("") }
+      try {
+        const p = await get(ref(rtdb, "sites/default/agent/previewMessages"))
+        const v = p.val() || []
+        const arr = Array.isArray(v) ? v.filter(Boolean) : Object.values(v)
+        setPreview(arr as any)
+      } catch {}
+    }
+    load()
+  }, [])
 
   return (
     <AppShell
@@ -53,19 +63,46 @@ Always be friendly, knowledgeable, and customer-focused. If you don't know somet
             </CardContent>
             <CardFooter className="flex gap-3 pt-6">
               <Button
-                className="bg-[#005BFF] hover:bg-[#004AD8] h-10 px-6"
+                className="bg-primary text-primary-foreground hover:opacity-90 h-10 px-6"
                 disabled={saving}
                 onClick={async () => {
                   setSaving(true)
-                  await new Promise((r) => setTimeout(r, 800))
-                  setSaving(false)
-                  alert("Script saved successfully!")
+                  setStatus(null)
+                  try {
+                    await set(ref(rtdb, "sites/default/agent/script"), script)
+                    setStatus("Saved")
+                  } catch (e: any) {
+                    setStatus(e?.message || "Save failed")
+                  } finally {
+                    setSaving(false)
+                  }
                 }}
               >
                 {saving ? "Saving..." : "Save Script"}
               </Button>
-              <Button variant="outline" className="h-10 px-6">
-                Reset to Default
+              <Button
+                variant="outline"
+                className="h-10 px-6"
+                onClick={async () => {
+                  setSaving(true)
+                  setStatus(null)
+                  // Try loading a default from RTDB; else clear
+                  try {
+                    const d = await get(ref(rtdb, "sites/default/agent/defaultScript"))
+                    const next = d.val() || ""
+                    setScript(next)
+                    await set(ref(rtdb, "sites/default/agent/script"), next)
+                    setStatus("Reset")
+                  } catch (e: any) {
+                    setScript("")
+                    await set(ref(rtdb, "sites/default/agent/script"), "")
+                    setStatus(e?.message || "Reset to empty")
+                  } finally {
+                    setSaving(false)
+                  }
+                }}
+              >
+                Reset
               </Button>
             </CardFooter>
           </Card>
@@ -84,17 +121,18 @@ Always be friendly, knowledgeable, and customer-focused. If you don't know somet
             </CardHeader>
             <CardContent className="p-4 space-y-3">
               <div className="space-y-2">
-                <div className="rounded-lg bg-[#F8F9FA] p-3 text-sm">
-                  Hi! I'm TechGuide Pro from ElectroWorld. How can I help you find the perfect tech solution today?
-                </div>
-                
-                <div className="rounded-lg bg-[#005BFF] p-3 text-sm text-white ml-8">
-                  Looking for a drone for photography
-                </div>
-                
-                <div className="rounded-lg bg-[#F8F9FA] p-3 text-sm">
-                  Excellent choice! Photography drones are fantastic. What's your experience level?
-                </div>
+                {preview.length === 0 ? (
+                  <div className="text-sm text-muted-foreground">No preview messages</div>
+                ) : (
+                  preview.map((m, i) => (
+                    <div
+                      key={i}
+                      className={`rounded-lg p-3 text-sm ${m.role === "assistant" ? "bg-muted" : "bg-primary text-primary-foreground ml-8"}`}
+                    >
+                      {m.text}
+                    </div>
+                  ))
+                )}
               </div>
             </CardContent>
             <CardFooter className="p-4 pt-3 border-t border-[#E5E7EB]">

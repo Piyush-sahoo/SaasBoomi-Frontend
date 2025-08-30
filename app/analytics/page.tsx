@@ -1,7 +1,8 @@
 import { AppShell } from "@/components/app-shell"
-import { KpiCard } from "@/components/kpi-card"
+import { DynamicKpis } from "@/components/dynamic-kpis"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { CalendarRange, Filter, Share2, TrendingUp } from "lucide-react"
 import { RevenueAttribution } from "@/components/charts/revenue-attribution"
 import { PerformanceLine } from "@/components/charts/performance-line"
 import Link from "next/link"
@@ -13,38 +14,25 @@ export default function AnalyticsPage() {
     >
       {/* Filters */}
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <Button variant="outline" size="sm">
-          Last 7 days
-        </Button>
-        <Button variant="outline" size="sm">
-          All Categories
-        </Button>
-        <Button variant="outline" size="sm">
-          All Sources
-        </Button>
-        <Button variant="ghost" size="sm">
-          Reset Filters
-        </Button>
+        <Button variant="secondary" size="sm"><CalendarRange className="mr-2 h-4 w-4" />Last 7 days</Button>
+        <Button variant="secondary" size="sm"><Filter className="mr-2 h-4 w-4" />All Categories</Button>
+        <Button variant="secondary" size="sm"><Filter className="mr-2 h-4 w-4" />All Sources</Button>
+        <Button variant="ghost" size="sm">Reset</Button>
         <div className="ml-auto flex gap-2">
           <Button variant="outline">Export</Button>
-          <Button asChild className="bg-[#005BFF] hover:bg-[#004AD8]">
-            <Link href="/customer-intelligence">Share</Link>
+          <Button asChild className="bg-primary text-primary-foreground hover:opacity-90">
+            <Link href="/customer-intelligence"><Share2 className="mr-2 h-4 w-4" />Share</Link>
           </Button>
         </div>
       </div>
 
       {/* KPIs */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <KpiCard title="Conversion Rate" value="12.5%" trend="↑ 2.1% vs last week" />
-        <KpiCard title="Avg Order Value" value="$156" trend="↑ $12 vs last week" accent="green" />
-        <KpiCard title="Total Conversations" value="1,247" />
-        <KpiCard title="Revenue Generated" value="$23,450" accent="amber" />
-      </div>
+      <DynamicKpis />
 
       <div className="mt-4 grid gap-4 md:grid-cols-3">
         <Card className="md:col-span-2">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Conversion Trends</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-base"><TrendingUp className="h-4 w-4" /> Conversion Trends</CardTitle>
           </CardHeader>
           <CardContent>
             <PerformanceLine />
