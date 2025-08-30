@@ -12,12 +12,24 @@ export function RevenueAttribution() {
   useEffect(() => {
     async function run() {
       try {
-        const snap = await get(ref(rtdb, "sites/default/metrics/attribution"))
-        const val = snap.val() || []
-        let items: any[] = []
-        if (Array.isArray(val)) items = val.filter(Boolean)
-        else items = Object.values(val)
-        setData(items as Item[])
+        const snap = await get(ref(rtdb, "events"))
+        const events = snap.val() || {}
+        let add = 0, view = 0, engage = 0
+        Object.values(events).forEach((ipNode: any) => {
+          Object.values(ipNode || {}).forEach((sessNode: any) => {
+            Object.values(sessNode || {}).forEach((ev: any) => {
+              if (!ev) return
+              if (ev.type === 'add_to_cart_success') add++
+              if (ev.type === 'view_cart') view++
+              if (ev.type === 'message') engage++
+            })
+          })
+        })
+        setData([
+          { name: 'Add to Cart', value: add, fill: '#3b82f6' },
+          { name: 'Cart Views', value: view, fill: '#10b981' },
+          { name: 'Engagement', value: engage, fill: '#f59e0b' },
+        ])
       } catch (e) {
         setData([])
       }

@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { CalendarRange, Filter, Share2, TrendingUp } from "lucide-react"
 import { RevenueAttribution } from "@/components/charts/revenue-attribution"
 import { PerformanceLine } from "@/components/charts/performance-line"
+import { VoiceCommerceFunnel } from "@/components/voice-commerce-funnel"
+import { VoiceCommerceInsights } from "@/components/voice-commerce-insights"
 import Link from "next/link"
 
 export default function AnalyticsPage() {
@@ -43,17 +45,7 @@ export default function AnalyticsPage() {
             </Button>
           </CardFooter>
         </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Conversation Flow</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            <div className="rounded-md bg-[#E5F0FF] px-3 py-2">Visitors — 5,234</div>
-            <div className="rounded-md bg-[#DCEAFE] px-3 py-2">Engaged — 3,768 (72%)</div>
-            <div className="rounded-md bg-[#C7DBFF] px-3 py-2">Qualified — 1,890 (50%)</div>
-            <div className="rounded-md bg-[#B5CEFF] px-3 py-2">Converted — 472 (25%)</div>
-          </CardContent>
-        </Card>
+        <VoiceCommerceFunnel />
       </div>
 
       <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -93,8 +85,13 @@ export default function AnalyticsPage() {
         </Card>
       </div>
 
+      {/* Voice Commerce Insights */}
+      <div className="mt-4">
+        <VoiceCommerceInsights />
+      </div>
+
       <div className="mt-4 flex items-center justify-between rounded-md border border-[#E5E7EB] px-3 py-2 text-xs text-[#616161]">
-        <span>Data updated: 2 minutes ago</span>
+        <span>Data updated: Real-time from Firebase</span>
         <span>Conversion rate goal: 15%</span>
       </div>
     </AppShell>
