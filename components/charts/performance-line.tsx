@@ -12,13 +12,31 @@ export function PerformanceLine() {
   useEffect(() => {
     async function run() {
       try {
-        const snap = await get(ref(rtdb, "sites/default/metrics/performance"))
-        const val = snap.val() || []
-        let items: any[] = []
-        if (Array.isArray(val)) items = val.filter(Boolean)
-        else items = Object.values(val)
-        items.sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0))
-        setData(items as Point[])
+        const snap = await get(ref(rtdb, "events"))
+        const events = snap.val() || {}
+        const buckets: Record<string, { ai: number; nonAi: number }> = {}
+        const now = Date.now()
+        const day = 24 * 60 * 60 * 1000
+        function dayKey(ts: number) {
+          const d = new Date(ts)
+          return d.toLocaleDateString(undefined, { weekday: 'short' })
+        }
+        Object.values(events).forEach((ipNode: any) => {
+          Object.values(ipNode || {}).forEach((sessNode: any) => {
+            Object.values(sessNode || {}).forEach((ev: any) => {
+              if (!ev || ev.type !== 'message') return
+              const ts = Number(ev.t || now)
+              if (now - ts > 7 * day) return
+              const key = dayKey(ts)
+              if (!buckets[key]) buckets[key] = { ai: 0, nonAi: 0 }
+              if (ev.data?.sender === 'assistant') buckets[key].ai++
+              if (ev.data?.sender === 'user') buckets[key].nonAi++
+            })
+          })
+        })
+        const labels = Array.from({ length: 7 }, (_, i) => dayKey(now - (6 - i) * day))
+        const pts: Point[] = labels.map((k) => ({ name: k, ai: buckets[k]?.ai || 0, nonAi: buckets[k]?.nonAi || 0 }))
+        setData(pts)
       } catch (e) {
         setData([])
       }
