@@ -1,3 +1,5 @@
+"use client"
+
 import { AppShell } from "@/components/app-shell"
 import { DynamicKpis } from "@/components/dynamic-kpis"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,8 +10,36 @@ import { PerformanceLine } from "@/components/charts/performance-line"
 import { VoiceCommerceFunnel } from "@/components/voice-commerce-funnel"
 import { VoiceCommerceInsights } from "@/components/voice-commerce-insights"
 import Link from "next/link"
+import { useEffect, useState } from "react"
+import { rtdb } from "@/lib/firebase"
+import { get, ref, type Database } from "firebase/database"
 
 export default function AnalyticsPage() {
+  const [topConversations, setTopConversations] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadAnalyticsData() {
+      try {
+        // Load top conversations data
+        const topConvSnap = await get(ref(rtdb as unknown as Database, "sites/default/analytics/topConversations"))
+        const topConvData = topConvSnap.val() || []
+        
+        setTopConversations(Array.isArray(topConvData) ? topConvData : Object.values(topConvData))
+        setLoading(false)
+      } catch (error) {
+        console.error('Error loading analytics data:', error)
+        setLoading(false)
+      }
+    }
+
+    loadAnalyticsData()
+    
+    // Refresh every 30 seconds
+    const interval = setInterval(loadAnalyticsData, 30000)
+    return () => clearInterval(interval)
+  }, [])
+
   return (
     <AppShell
       title="Analytics & Performance"
@@ -64,18 +94,35 @@ export default function AnalyticsPage() {
             <CardTitle className="text-base">Top Performing Conversations</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-[#616161]">
-            <div className="flex items-center justify-between">
-              <span>Drone comparison query</span>
-              <span className="text-[#10b981]">+$450</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>Camera accessory help</span>
-              <span className="text-[#10b981]">+$280</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>Warranty explanation</span>
-              <span className="text-[#10b981]">+$320</span>
-            </div>
+            {loading ? (
+              <div className="space-y-2">
+                {[1,2,3].map(i => (
+                  <div key={i} className="animate-pulse h-6 bg-gray-200 rounded"></div>
+                ))}
+              </div>
+            ) : topConversations.length > 0 ? (
+              topConversations.slice(0, 3).map((conv, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <span>{conv.description}</span>
+                  <span className="text-[#10b981]">{conv.revenue}</span>
+                </div>
+              ))
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span>Phone camera quality inquiry</span>
+                  <span className="text-[#10b981]">+₹420</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Price range voice search</span>
+                  <span className="text-[#10b981]">+₹380</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Feature comparison request</span>
+                  <span className="text-[#10b981]">+₹320</span>
+                </div>
+              </div>
+            )}
           </CardContent>
           <CardFooter>
             <Button variant="link" className="p-0">
