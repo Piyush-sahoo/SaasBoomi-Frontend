@@ -19,87 +19,17 @@ export function DynamicKpis() {
   const [kpis, setKpis] = useState<KPIs | null>(null)
 
   useEffect(() => {
-    async function run() {
-      try {
-        // First try to get enhanced KPI data
-        const enhancedKpisSnap = await get(ref(rtdb as unknown as Database, "sites/default/dashboard/kpis"))
-        const enhancedKpis = enhancedKpisSnap.val()
-        
-        if (enhancedKpis) {
-          setKpis(enhancedKpis)
-          return
-        }
-
-        // Fallback to calculating from events (existing logic)
-        const snap = await get(ref(rtdb as unknown as Database, "events"))
-        const events = snap.val() || {}
-        
-        // Also try voice-commerce-sessions for more accurate data
-        const sessionsSnap = await get(ref(rtdb as unknown as Database, "voice-commerce-sessions"))
-        const sessions = sessionsSnap.val() || {}
-        
-        let totalConversations = 0
-        let addToCart = 0
-        let totalRevenue = 0
-        
-        // Count from voice-commerce-sessions (more accurate)
-        Object.values(sessions).forEach((session: any) => {
-          if (session.conversations) {
-            const userMessages = Object.values(session.conversations).filter((conv: any) => 
-              conv.messageType === 'user_voice' || conv.messageType === 'user_text'
-            )
-            totalConversations += userMessages.length
-          }
-          
-          if (session.cartInteractions) {
-            Object.values(session.cartInteractions).forEach((interaction: any) => {
-              if (interaction.action === 'add') {
-                addToCart++
-                if (interaction.cartTotal?.amount) {
-                  totalRevenue += parseFloat(interaction.cartTotal.amount)
-                }
-              }
-            })
-          }
-        })
-
-        // Fallback to events if no session data
-        if (totalConversations === 0) {
-          const flattened: any[] = []
-          Object.values(events).forEach((ipNode: any) => {
-            if (!ipNode) return
-            Object.values(ipNode).forEach((sessNode: any) => {
-              if (!sessNode) return
-              Object.values(sessNode).forEach((ev: any) => flattened.push(ev))
-            })
-          })
-
-          flattened.forEach((e) => {
-            if (!e) return
-            if (e.type === 'message' && e.data?.sender === 'user') {
-              totalConversations++
-            }
-            if (e.type === 'add_to_cart_success') addToCart++
-          })
-        }
-
-        const sessionCount = Object.keys(sessions).length || 1
-        const conversionRate = totalConversations > 0 ? (addToCart / totalConversations) * 100 : 0
-        const avgOrderValue = addToCart > 0 ? totalRevenue / addToCart : 0
-
-        setKpis({
-          conversionRate: `${conversionRate.toFixed(1)}%`,
-          conversionTrend: conversionRate > 10 ? "↑ 8.2%" : "↓ 2.1%",
-          avgOrderValue: `₹${avgOrderValue.toFixed(0)}`,
-          aovTrend: avgOrderValue > 30000 ? "↑ 15.3%" : "↓ 5.2%",
-          totalConversations: String(totalConversations),
-          revenueGenerated: `₹${totalRevenue.toFixed(0)}`,
-        })
-      } catch {
-        setKpis({})
-      }
+    // Hardcoded KPI data as requested
+    const hardcodedKpis = {
+      conversionRate: "12.5%", // 12 converted / 41 visitors * 100
+      conversionTrend: "↑ 8.2%",
+      avgOrderValue: "₹38,500",
+      aovTrend: "↑ 15.3%",
+      totalConversations: "33", // Total conversions = 33
+      revenueGenerated: "₹4,87,250",
     }
-    run()
+    
+    setKpis(hardcodedKpis)
   }, [])
 
   if (!kpis) {

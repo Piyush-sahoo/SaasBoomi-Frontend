@@ -5,7 +5,7 @@ import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "rec
 import { rtdb } from "@/lib/firebase"
 import { get, ref } from "firebase/database"
 
-type Point = { name: string; ai: number; nonAi: number }
+type Point = { name: string; ai: number }
 
 export function PerformanceLine() {
   const [data, setData] = useState<Point[] | null>(null)

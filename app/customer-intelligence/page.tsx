@@ -30,40 +30,85 @@ export default function CustomerIntelligencePage() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null)
 
-  // Function to load data from Firebase
+  // Function to load hardcoded data as requested
   const loadData = async () => {
-    try {
-      const s = await get(ref(rtdb, "sites/default/intelligence/summary"))
-      setSummary((s.val() || {}) as Summary)
-    } catch { setSummary({}) }
-    try {
-      const i = await get(ref(rtdb, "sites/default/intelligence/insights"))
-      const v = i.val() || []
-      const arr = Array.isArray(v) ? v.filter(Boolean) : Object.values(v)
-      setInsights(arr as Insight[])
-    } catch {}
-    try {
-      const o = await get(ref(rtdb, "sites/default/intelligence/objections"))
-      const v = o.val() || []
-      const arr = Array.isArray(v) ? v.filter(Boolean) : Object.values(v)
-      setObjections(arr as Objection[])
-    } catch {}
-    try {
-      const m = await get(ref(rtdb, "sites/default/intelligence/interestMap"))
-      const v = m.val() || []
-      const arr = Array.isArray(v) ? v.filter(Boolean) : Object.values(v)
-      setInterestMap(arr as Interest[])
-    } catch {}
-    try {
-      const j = await get(ref(rtdb, "sites/default/intelligence/journey"))
-      const v = j.val() || []
-      const arr = Array.isArray(v) ? v.filter(Boolean) : Object.values(v)
-      setJourney(arr as string[])
-    } catch {}
-    try {
-      const f = await get(ref(rtdb, "sites/default/intelligence/footer"))
-      setFooter((f.val() || {}) as any)
-    } catch {}
+    // Hardcoded customer intelligence data
+    const hardcodedSummary = {
+      newInsights: { value: 3, trend: "↑ This week" },
+      trendingTopics: { value: 5, trend: "↑ Active" },
+      sentiment: { value: "Positive", trend: "↑ 85% satisfaction" },
+      // Action Items Generated removed as requested
+    }
+
+    const hardcodedInsights = [
+      {
+        title: "Voice commands drive 35% higher conversion rates",
+        quote: "I prefer speaking to the assistant rather than typing - it feels more natural and faster",
+        color: "bg-blue-50 border-blue-200",
+        actions: [
+          "Promote voice feature more prominently on homepage",
+          "Add voice tutorials for new users",
+          "Optimize voice recognition for mobile users"
+        ]
+      },
+      {
+        title: "Mobile users prefer shorter interaction sessions (8-10 mins)",
+        quote: "On mobile, I want quick answers. The voice assistant helps me find what I need fast",
+        color: "bg-green-50 border-green-200", 
+        actions: [
+          "Optimize mobile voice interface for speed",
+          "Implement quick product suggestions",
+          "Add voice shortcuts for common queries"
+        ]
+      },
+      {
+        title: "Product search queries peak during lunch hours (12-2 PM)",
+        quote: "I usually browse phones during lunch break when I have free time",
+        color: "bg-purple-50 border-purple-200",
+        actions: [
+          "Schedule targeted notifications during peak hours",
+          "Prepare lunch-time product recommendations",
+          "Ensure optimal server capacity during 12-2 PM"
+        ]
+      }
+    ]
+
+    const hardcodedObjections = [
+      { label: "Price concerns", percent: 32 },
+      { label: "Feature comparisons needed", percent: 28 },
+      { label: "Warranty questions", percent: 23 },
+      { label: "Delivery time concerns", percent: 17 }
+    ]
+
+    const hardcodedInterestMap = [
+      { label: "iPhone 15 Pro", value: 85, color: "bg-blue-500" },
+      { label: "Samsung Galaxy S24", value: 72, color: "bg-green-500" },
+      { label: "Phones under ₹30K", value: 68, color: "bg-purple-500" },
+      { label: "Gaming phones", value: 45, color: "bg-orange-500" },
+      { label: "Camera quality", value: 89, color: "bg-red-500" }
+    ]
+
+    const hardcodedJourney = [
+      "User arrives via voice search",
+      "Engages with AI assistant",
+      "Asks about product specifications", 
+      "Compares 2-3 options",
+      "Adds preferred item to cart",
+      "Proceeds to checkout"
+    ]
+
+    const hardcodedFooter = {
+      updated: new Date().toLocaleString(),
+      accuracy: "94.2%",
+      pending: "0 items" // No action items as requested
+    }
+
+    setSummary(hardcodedSummary)
+    setInsights(hardcodedInsights)
+    setObjections(hardcodedObjections)
+    setInterestMap(hardcodedInterestMap)
+    setJourney(hardcodedJourney)
+    setFooter(hardcodedFooter)
     setLastRefresh(new Date())
   }
 
@@ -136,14 +181,14 @@ export default function CustomerIntelligencePage() {
       </div>
 
       {/* Summary KPIs */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-3">
         {(() => {
           const s = summary || {}
           const cards = [
             { label: "New Insights This Week", v: s.newInsights },
             { label: "Trending Topics", v: s.trendingTopics },
             { label: "Customer Sentiment", v: s.sentiment },
-            { label: "Action Items Generated", v: s.actionItems },
+            // Action Items Generated removed as requested
           ]
           return cards.map((c) => (
             <Card key={c.label}>

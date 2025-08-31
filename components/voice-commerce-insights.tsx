@@ -12,25 +12,55 @@ export function VoiceCommerceInsights() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function loadData() {
-      try {
-        const [cart, convs] = await Promise.all([
-          getCartPerformanceMetrics(),
-          getRecentConversations(5)
-        ])
-        setCartMetrics(cart)
-        setConversations(convs)
-        setLoading(false)
-      } catch (error) {
-        console.error('Error loading voice commerce insights:', error)
-        setLoading(false)
-      }
+    // Hardcoded customer intelligence data
+    const hardcodedCartMetrics = {
+      totalCartValue: 487250,
+      cartAdditions: 29, // qualified users
+      checkoutClicks: 12, // converted users
+      cartToCheckoutRate: (12/29) * 100, // 41.37% (reverse of abandonment)
+      topProducts: [
+        { product: "iPhone 15 Pro", count: 8 },
+        { product: "Samsung Galaxy S24", count: 6 },
+        { product: "Google Pixel 8", count: 4 },
+        { product: "OnePlus 12", count: 3 },
+        { product: "Xiaomi 14", count: 2 }
+      ]
     }
 
-    loadData()
-    const interval = setInterval(loadData, 30000) // Refresh every 30 seconds
+    const hardcodedConversations = [
+      {
+        type: 'user_voice',
+        content: 'Looking for a phone with good camera quality under 80000',
+        timestamp: Date.now() - 300000, // 5 mins ago
+        tools_used: ['searchProducts']
+      },
+      {
+        type: 'assistant', 
+        content: 'I found 3 excellent camera phones: iPhone 15 Pro, Samsung Galaxy S24, and Google Pixel 8',
+        timestamp: Date.now() - 280000
+      },
+      {
+        type: 'user_text',
+        content: 'Compare iPhone 15 Pro and Samsung Galaxy S24',
+        timestamp: Date.now() - 240000,
+        tools_used: ['searchProducts', 'compareProducts']
+      },
+      {
+        type: 'user_voice',
+        content: 'Add iPhone 15 Pro to cart',
+        timestamp: Date.now() - 180000,
+        tools_used: ['addToCart']
+      },
+      {
+        type: 'assistant',
+        content: 'Added iPhone 15 Pro to your cart! Total: ₹134,900',
+        timestamp: Date.now() - 160000
+      }
+    ]
 
-    return () => clearInterval(interval)
+    setCartMetrics(hardcodedCartMetrics)
+    setConversations(hardcodedConversations)
+    setLoading(false)
   }, [])
 
   if (loading) {

@@ -10,12 +10,29 @@ export function VoiceCommerceFunnel() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const unsubscribe = subscribeToVoiceCommerceMetrics((newMetrics) => {
-      setMetrics(newMetrics)
-      setLoading(false)
-    })
-
-    return () => unsubscribe()
+    // Hardcoded metrics as requested
+    const hardcodedMetrics = {
+      visited: 41,
+      engaged: 33,
+      qualified: 29,
+      converted: 12,
+      engagementRate: Math.round((33/41) * 100), // 80.5%
+      qualificationRate: Math.round((29/41) * 100), // 70.7%
+      conversionRate: Math.round((12/41) * 100), // 29.3%
+      avgSessionTime: 12 * 60, // 12 minutes in seconds
+      cartAbandonment: 41.37,
+      topSearchQueries: [
+        "iPhone 15 Pro",
+        "Samsung Galaxy S24",
+        "phones under ₹30000",
+        "best camera phone",
+        "gaming smartphones"
+      ],
+      lastUpdated: Date.now()
+    }
+    
+    setMetrics(hardcodedMetrics)
+    setLoading(false)
   }, [])
 
   if (loading) {
