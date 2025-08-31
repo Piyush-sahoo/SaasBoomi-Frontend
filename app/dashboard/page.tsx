@@ -87,7 +87,7 @@ export default function DashboardPage() {
   }, [])
 
   return (
-    <AppShell title="Good morning! Here's your AI Sales Agent performance today">
+    <AppShell title="Good morning! Here's your Voice Cart performance today">
       {/* KPIs */}
       <DynamicKpis />
 
