@@ -1,7 +1,7 @@
 # Gradient UI Design Specification
 
 ## Overview
-Transform the SaasBoomi-Frontend application with a modern gradient design inspired by the Marketeam example, featuring light purple/pink gradients with clean, attractive styling.
+Transform the voice-cart application with a modern gradient design inspired by the Marketeam example, featuring light purple/pink gradients with clean, attractive styling.
 
 ## Color Palette
 

@@ -35,7 +35,7 @@ export function AppShell({ title, children, breadcrumb }: AppShellProps) {
           {/* Sidebar Header */}
           <div className="border-b border-gray-200/30 p-4 bg-gradient-to-r from-gray-50/50 to-gray-100/30">
             <Link href="/" className="font-bold tracking-tight text-gradient text-lg">
-              AI Sales Agent
+              Voice Cart
             </Link>
           </div>
           
@@ -87,7 +87,7 @@ export function AppShell({ title, children, breadcrumb }: AppShellProps) {
               {/* Mobile Sidebar Header */}
               <div className="flex items-center justify-between border-b border-gray-200/30 p-4 bg-gradient-to-r from-gray-50/50 to-gray-100/30">
                 <Link href="/" className="font-bold text-gradient">
-                  AI Sales Agent
+                  Voice Cart
                 </Link>
                 <Button
                   variant="ghost"
@@ -151,7 +151,7 @@ export function AppShell({ title, children, breadcrumb }: AppShellProps) {
             
             {/* Mobile Logo */}
             <Link href="/" className="font-bold text-gradient md:hidden">
-              AI Sales Agent
+              Voice Cart
             </Link>
             
             {/* Search Bar */}

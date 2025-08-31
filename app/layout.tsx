@@ -5,9 +5,9 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: 'Voice Cart - AI-Powered Voice Commerce',
+  description: 'Transform your e-commerce store with intelligent voice agents that guide customers and boost conversions',
+  generator: 'Voice Cart',
 }
 
 export default function RootLayout({

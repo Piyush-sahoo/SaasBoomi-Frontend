@@ -71,7 +71,7 @@ export default function CustomerIntelligencePage() {
   const generateInsights = async () => {
     setIsGenerating(true)
     try {
-      const response = await fetch('http://localhost:3456/api/generate-insights', {
+      const response = await fetch('http://voice-agent-server-443142017693.asia-south1.run.app/api/generate-insights', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       })

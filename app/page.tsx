@@ -68,7 +68,7 @@ export default function LandingPage() {
           <nav className="flex items-center gap-6">
             <Link href="/" className="font-semibold tracking-tight">
               <span className="rounded-md bg-gradient-button px-3 py-1 text-xs text-white font-medium">BETA</span>
-              <span className="ml-2 text-gradient text-xl font-bold">VoiceCommerce AI</span>
+              <span className="ml-2 text-gradient text-xl font-bold">Voice Cart</span>
             </Link>
             <a href="#features" className="text-sm text-muted-foreground hover:text-gray-700 transition-colors">
               Features
@@ -179,7 +179,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-7xl px-4">
           <div className="text-center mb-16">
             <h2 className="text-balance text-5xl font-bold tracking-tight mb-6">
-              <span className="text-gradient">Why Choose VoiceCommerce AI?</span>
+              <span className="text-gradient">Why Choose Voice Cart?</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Our AI voice agents don't just answer questions—they actively guide customers to purchase decisions, increasing your conversion rates and average order value.
@@ -315,7 +315,7 @@ export default function LandingPage() {
       <footer className="border-t border-gray-200/30 bg-gradient-to-r from-gray-50/30 to-gray-100/20">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-12 text-sm text-gray-600">
           <div>
-            <div className="text-gradient text-xl font-bold mb-2">VoiceCommerce AI</div>
+            <div className="text-gradient text-xl font-bold mb-2">Voice Cart</div>
             <span className="font-medium">© {new Date().getFullYear()} All rights reserved</span>
           </div>
           <div className="flex items-center gap-8">
